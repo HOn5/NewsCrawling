@@ -106,20 +106,3 @@ instance = News(urls)
 elements = instance.crawling()
 result = instance.filtering(elements)
 instance.insert(result)
-
-
-
-
-
-
-
-//*[@id="toplistWrapper"]/div[2]/div/a[10]1페이지 다음키
-//*[@id="toplistWrapper"]/div[2]/div/a[1] 1페이지 2번
-
-//*[@id="toplistWrapper"]/div[2]/div/a[2] 2페이지 12번
-//*[@id="toplistWrapper"]/div[2]/div/a[11] 2페이지 다음키
-
-//*[@id="toplistWrapper"]/div[2]/div/a[2] 3페이지 22펀
-//*[@id="toplistWrapper"]/div[2]/div/a[11] 3페이지 다음키
-
-

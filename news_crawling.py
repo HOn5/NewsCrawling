@@ -35,10 +35,10 @@ class NewsCrawling():
         WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="changeListCount"]/a[5]'))).click()
 
         #링크 추출 최대 페이지 7
-        for i in range(1, 2):
+        for page in range(1, 2):
             #첫 페이지의 경우 버튼의 갯수가 하나 적음
-            if i == 1:
-                for j in range(1, 10):
+            if page == 1:
+                for btn in range(1, 10):
                     try:
                         # 현재 페이지에서 링크 수집
                         elements = WebDriverWait(driver, 10).until(
@@ -48,7 +48,7 @@ class NewsCrawling():
                         newsUrls.extend(hrefs)
 
                         # 다음 페이지 버튼 클릭
-                        number = f'//*[@id="toplistWrapper"]/div[2]/div/a[{j}]'
+                        number = f'//*[@id="toplistWrapper"]/div[2]/div/a[{btn}]'
                         next_button = WebDriverWait(driver, 10).until(
                             EC.element_to_be_clickable((By.XPATH, number))
                         )
@@ -63,12 +63,12 @@ class NewsCrawling():
                             EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'a.pcol2._setTop._setTopListUrl'))
                         )
                     except Exception as e:
-                        print(f"Error on page {i}: {e}")
+                        print(f"Error on page {page}: {e}")
                         continue
             else:
-                for j in range(2, 12):
+                for btn in range(2, 12):
                     #마지막 페이지일 때 break
-                    if i == 6 and j == 8:
+                    if page == 6 and btn == 8:
                         break
 
                     try:
@@ -80,7 +80,7 @@ class NewsCrawling():
                         newsUrls.extend(hrefs)
 
                         # 다음 페이지 버튼 클릭
-                        number = f'//*[@id="toplistWrapper"]/div[2]/div/a[{j}]'
+                        number = f'//*[@id="toplistWrapper"]/div[2]/div/a[{btn}]'
                         next_button = WebDriverWait(driver, 10).until(
                             EC.element_to_be_clickable((By.XPATH, number))
                         )
@@ -96,7 +96,7 @@ class NewsCrawling():
                             EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'a.pcol2._setTop._setTopListUrl'))
                         )
                     except Exception as e:
-                        print(f"Error on page {i}: {e}")
+                        print(f"Error on page {page}: {e}")
                         continue
         driver.quit()
         return newsUrls
@@ -107,7 +107,6 @@ class NewsCrawling():
 
         for url in urls:
             driver.get(url)
-
             # 요소 찾기
             elements = WebDriverWait(driver, 10).until(
                 EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'p.se-text-paragraph.se-text-paragraph-align-'))
@@ -124,8 +123,10 @@ class NewsCrawling():
 
         for texts in html:
             body = ""
+            # 문장에서 제목, 날짜, 방송사 찾기
             pattern = r"\[(.*?)\] (.*?) \((.+)\)$"
             for text in texts:
+                # 문장에 별 모양이 있는 경우
                 if '\u2605' in text:
                     continue
 
