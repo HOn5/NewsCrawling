@@ -58,10 +58,7 @@ class NewsCrawling():
                         WebDriverWait(driver, 10).until(
                             EC.staleness_of(next_button)
                         )
-                        # 페이지가 변경된 후 다시 요소 찾기
-                        WebDriverWait(driver, 10).until(
-                            EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'a.pcol2._setTop._setTopListUrl'))
-                        )
+                        
                     except Exception as e:
                         print(f"Error on page {page}: {e}")
                         continue
@@ -91,10 +88,6 @@ class NewsCrawling():
                             EC.staleness_of(next_button)
                         )
 
-                        # 페이지가 변경된 후 다시 요소 찾기
-                        WebDriverWait(driver, 10).until(
-                            EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'a.pcol2._setTop._setTopListUrl'))
-                        )
                     except Exception as e:
                         print(f"Error on page {page}: {e}")
                         continue
