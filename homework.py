@@ -76,12 +76,21 @@ class News():
             time = news['time']
             body = news['body']
 
-            sql = "INSERT INTO news (newsroom, title, time, body) VALUES (%s, %s, %s, %s)"
-            val = (newsroom, title, time, body)
-            cursor.execute(sql, val)
-            self.db.commit()
+            # 중복 확인 쿼리
+            select_query = "SELECT COUNT(*) FROM news WHERE title = %s"
+            cursor.execute(select_query, (title,))
+            result = cursor.fetchone()
 
-            print(cursor.rowcount, "record inserted")
+            if result[0] == 0:
+                # 중복되지 않은 경우 삽입
+                sql = "INSERT INTO news (newsroom, title, time, body) VALUES (%s, %s, %s, %s)"
+                val = (newsroom, title, time, body)
+                cursor.execute(sql, val)
+                self.db.commit()
+
+                print(cursor.rowcount, "record inserted")
+            else:
+                print(f"Duplicate entry found for title: {title}")
 
         cursor.close()
 

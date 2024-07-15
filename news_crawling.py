@@ -11,9 +11,9 @@ class NewsCrawling():
         #계정 정보, db이름
         self.db = pymysql.connect(
             host="localhost",
-            user="root",
-            password="admin",
-            database="news_db",
+            user="",
+            password="",
+            database="",
             charset="utf8mb4"
         )
 
