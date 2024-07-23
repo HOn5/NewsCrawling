@@ -195,7 +195,5 @@ url = 'https://blog.naver.com/sj3589/223507471958'
 instance = NewsCrawling(url)
 newsUrls = instance.get_urls()
 texts = instance.crawling(newsUrls)
-print(1)
 data = instance.filtering(texts)
-print(2)
 instance.insert(data)
