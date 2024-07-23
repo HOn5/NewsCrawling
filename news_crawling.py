@@ -35,62 +35,33 @@ class NewsCrawling():
         WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="listCountToggle"]'))).click()
         WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="changeListCount"]/a[5]'))).click()
 
-        #링크 추출 최대 페이지 7
-        for page in range(1, 5):
-            #첫 페이지의 경우 버튼의 갯수가 하나 적음   
-            if page == 1:
-                for btn in range(1, 11):
-                    try:
-                        # 현재 페이지에서 링크 수집 
-                        elements = WebDriverWait(driver, 10).until(
-                            EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'a.pcol2._setTop._setTopListUrl'))
-                        )
-                        hrefs = [element.get_attribute('href') for element in elements]
-                        newsUrls.extend(hrefs)
+        for page in range(1, 2):
+            #첫 페이지의 경우 버튼의 갯수가 하나 적음  
+            btn_range = range(1, 4) if page == 1 else range(2, 12)
+            for btn in btn_range:
+                try:
+                    # 현재 페이지에서 링크 수집 
+                    elements = WebDriverWait(driver, 10).until(
+                        EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'a.pcol2._setTop._setTopListUrl'))
+                    )
+                    hrefs = [element.get_attribute('href') for element in elements]
+                    newsUrls.extend(hrefs)
 
-                        # 다음 페이지 버튼 클릭
-                        number = f'//*[@id="toplistWrapper"]/div[2]/div/a[{btn}]'
-                        next_button = WebDriverWait(driver, 10).until(
-                            EC.element_to_be_clickable((By.XPATH, number))
-                        )
-                        next_button.click()
+                    # 다음 페이지 버튼 클릭
+                    number = f'//*[@id="toplistWrapper"]/div[2]/div/a[{btn}]'
+                    next_button = WebDriverWait(driver, 10).until(
+                        EC.element_to_be_clickable((By.XPATH, number))
+                    )
+                    next_button.click()
 
-                        # 페이지 로딩 대기
-                        WebDriverWait(driver, 10).until(
-                            EC.staleness_of(next_button)
-                        )
-                    except Exception as e:
-                        print(f"Error on page {page}: {e}")
-                        continue
-            else:
-                for btn in range(2, 12):
-                    #마지막 페이지일 때 break
-                    if page == 6 and btn == 8:
-                        break
+                    # 페이지 로딩 대기
+                    WebDriverWait(driver, 10).until(
+                        EC.staleness_of(next_button)
+                    )
+                except Exception as e:
+                    print(f"Error on page {page}: {e}")
+                    continue
 
-                    try:
-                        # 현재 페이지에서 링크 수집
-                        elements = WebDriverWait(driver, 10).until(
-                            EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'a.pcol2._setTop._setTopListUrl'))
-                        )
-                        hrefs = [element.get_attribute('href') for element in elements]
-                        newsUrls.extend(hrefs)
-
-                        # 다음 페이지 버튼 클릭
-                        number = f'//*[@id="toplistWrapper"]/div[2]/div/a[{btn}]'
-                        next_button = WebDriverWait(driver, 10).until(
-                            EC.element_to_be_clickable((By.XPATH, number))
-                        )
-                        next_button.click()
-
-                        # 페이지 로딩 대기
-                        WebDriverWait(driver, 10).until(
-                            EC.staleness_of(next_button)
-                        )
-
-                    except Exception as e:
-                        print(f"Error on page {page}: {e}")
-                        continue
         driver.quit()
         return newsUrls
             
@@ -125,11 +96,11 @@ class NewsCrawling():
     
     def filtering(self, html):
         newsData = []
+        pattern = r"\[(.*?)\] (.*?) \((.+)\)$"
 
         for texts in html:
             body = ""
             # 문장에서 제목, 날짜, 방송사 찾기
-            pattern = r"\[(.*?)\] (.*?) \((.+)\)$"
 
             for text in texts:
                 # 문장에 별 모양이 있는 경우
@@ -139,9 +110,7 @@ class NewsCrawling():
                 match = re.search(pattern, text)
 
                 if match:
-                    newsroom = match.group(1)
-                    title = match.group(2)
-                    time = match.group(3)
+                    newsroom, title, time = match.groups()
                     continue
 
                 #기사 본문이 끝나면 딕셔너리 저장
