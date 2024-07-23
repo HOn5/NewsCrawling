@@ -12,9 +12,9 @@ class NewsCrawling():
         #계정 정보, db이름
         self.db = pymysql.connect(
             host="localhost",
-            user="root",
-            password="admin",
-            database="news_db",
+            user="",
+            password="",
+            database="",
             charset="utf8mb4"
         )
 
@@ -26,14 +26,19 @@ class NewsCrawling():
         driver.get(self.url)
 
         # iframe으로 전환
-        WebDriverWait(driver, 10).until(EC.frame_to_be_available_and_switch_to_it((By.ID, "mainFrame")))
+        WebDriverWait(driver, 5).until(
+            EC.frame_to_be_available_and_switch_to_it((By.ID, "mainFrame")))
 
         #목록 클릭
-        WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, "a.btn_openlist.pcol2._toggleTopList._returnFalse"))).click()
+        WebDriverWait(driver, 5).until(
+            EC.presence_of_element_located(
+                (By.CSS_SELECTOR, "a.btn_openlist.pcol2._toggleTopList._returnFalse"))).click()
 
         #30줄 보기
-        WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="listCountToggle"]'))).click()
-        WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="changeListCount"]/a[5]'))).click()
+        WebDriverWait(driver, 5).until(
+            EC.element_to_be_clickable((By.XPATH, '//*[@id="listCountToggle"]'))).click()
+        WebDriverWait(driver, 5).until(
+            EC.presence_of_element_located((By.XPATH, '//*[@id="changeListCount"]/a[5]'))).click()
 
         for page in range(1, 2):
             #첫 페이지의 경우 버튼의 갯수가 하나 적음  
@@ -41,7 +46,7 @@ class NewsCrawling():
             for btn in btn_range:
                 try:
                     # 현재 페이지에서 링크 수집 
-                    elements = WebDriverWait(driver, 10).until(
+                    elements = WebDriverWait(driver, 5).until(
                         EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'a.pcol2._setTop._setTopListUrl'))
                     )
                     hrefs = [element.get_attribute('href') for element in elements]
@@ -49,13 +54,13 @@ class NewsCrawling():
 
                     # 다음 페이지 버튼 클릭
                     number = f'//*[@id="toplistWrapper"]/div[2]/div/a[{btn}]'
-                    next_button = WebDriverWait(driver, 10).until(
+                    next_button = WebDriverWait(driver, 5).until(
                         EC.element_to_be_clickable((By.XPATH, number))
                     )
                     next_button.click()
 
                     # 페이지 로딩 대기
-                    WebDriverWait(driver, 10).until(
+                    WebDriverWait(driver, 5).until(
                         EC.staleness_of(next_button)
                     )
                 except Exception as e:
@@ -74,7 +79,7 @@ class NewsCrawling():
             
             try:
                 # 요소 찾기
-                elements = WebDriverWait(driver, 10).until(
+                elements = WebDriverWait(driver, 5).until(
                     EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'p.se-text-paragraph.se-text-paragraph-align-'))
                 )
 
@@ -84,7 +89,7 @@ class NewsCrawling():
             except TimeoutException:
                 print(f"Elements not found for URL: {url}")
 
-                elements = WebDriverWait(driver, 10).until(
+                elements = WebDriverWait(driver, 5).until(
                     EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'p.se-text-paragraph.se-text-paragraph-align-justify'))
                 )
 
