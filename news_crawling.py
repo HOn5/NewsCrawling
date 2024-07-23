@@ -2,6 +2,7 @@ from selenium import webdriver
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
+from selenium.common.exceptions import TimeoutException
 import pymysql
 import re
 
@@ -11,9 +12,9 @@ class NewsCrawling():
         #계정 정보, db이름
         self.db = pymysql.connect(
             host="localhost",
-            user="",
-            password="",
-            database="",
+            user="root",
+            password="admin",
+            database="news_db",
             charset="utf8mb4"
         )
 
@@ -35,12 +36,12 @@ class NewsCrawling():
         WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="changeListCount"]/a[5]'))).click()
 
         #링크 추출 최대 페이지 7
-        for page in range(1, 2):
-            #첫 페이지의 경우 버튼의 갯수가 하나 적음
+        for page in range(1, 5):
+            #첫 페이지의 경우 버튼의 갯수가 하나 적음   
             if page == 1:
-                for btn in range(1, 10):
+                for btn in range(1, 11):
                     try:
-                        # 현재 페이지에서 링크 수집
+                        # 현재 페이지에서 링크 수집 
                         elements = WebDriverWait(driver, 10).until(
                             EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'a.pcol2._setTop._setTopListUrl'))
                         )
@@ -58,7 +59,6 @@ class NewsCrawling():
                         WebDriverWait(driver, 10).until(
                             EC.staleness_of(next_button)
                         )
-                        
                     except Exception as e:
                         print(f"Error on page {page}: {e}")
                         continue
@@ -100,15 +100,27 @@ class NewsCrawling():
 
         for url in urls:
             driver.get(url)
-            # 요소 찾기
-            elements = WebDriverWait(driver, 10).until(
-                EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'p.se-text-paragraph.se-text-paragraph-align-'))
-            )
+            
+            try:
+                # 요소 찾기
+                elements = WebDriverWait(driver, 10).until(
+                    EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'p.se-text-paragraph.se-text-paragraph-align-'))
+                )
 
-            # 각 요소의 텍스트 가져오기
-            newsTexts.append([element.text for element in elements])
-        
+                # 각 요소의 텍스트 가져오기
+                newsTexts.append([element.text for element in elements])
+
+            except TimeoutException:
+                print(f"Elements not found for URL: {url}")
+
+                elements = WebDriverWait(driver, 10).until(
+                    EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'p.se-text-paragraph.se-text-paragraph-align-justify'))
+                )
+
+                newsTexts.append([element.text for element in elements])
+
         driver.quit()
+
         return newsTexts
     
     def filtering(self, html):
@@ -118,6 +130,7 @@ class NewsCrawling():
             body = ""
             # 문장에서 제목, 날짜, 방송사 찾기
             pattern = r"\[(.*?)\] (.*?) \((.+)\)$"
+
             for text in texts:
                 # 문장에 별 모양이 있는 경우
                 if '\u2605' in text:
@@ -182,5 +195,7 @@ url = 'https://blog.naver.com/sj3589/223507471958'
 instance = NewsCrawling(url)
 newsUrls = instance.get_urls()
 texts = instance.crawling(newsUrls)
+print(1)
 data = instance.filtering(texts)
-sql = instance.insert(data)
+print(2)
+instance.insert(data)
