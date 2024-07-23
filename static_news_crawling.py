@@ -8,9 +8,9 @@ class News():
         self.urls = urls
         self.db = pymysql.connect(
             host="localhost",
-            user="root",
-            password="admin",
-            database="news_db",
+            user="",
+            password="",
+            database="",
             charset="utf8mb4"
         )
 
