@@ -27,18 +27,22 @@ class NewsCrawling():
 
         # iframe으로 전환
         WebDriverWait(driver, 5).until(
-            EC.frame_to_be_available_and_switch_to_it((By.ID, "mainFrame")))
+            EC.frame_to_be_available_and_switch_to_it((By.ID, "mainFrame"))
+        )
 
         #목록 클릭
         WebDriverWait(driver, 5).until(
             EC.presence_of_element_located(
-                (By.CSS_SELECTOR, "a.btn_openlist.pcol2._toggleTopList._returnFalse"))).click()
+                (By.CSS_SELECTOR, "a.btn_openlist.pcol2._toggleTopList._returnFalse"))
+        ).click()
 
         #30줄 보기
         WebDriverWait(driver, 5).until(
-            EC.element_to_be_clickable((By.XPATH, '//*[@id="listCountToggle"]'))).click()
+            EC.element_to_be_clickable((By.XPATH, '//*[@id="listCountToggle"]'))
+        ).click()
         WebDriverWait(driver, 5).until(
-            EC.presence_of_element_located((By.XPATH, '//*[@id="changeListCount"]/a[5]'))).click()
+            EC.presence_of_element_located((By.XPATH, '//*[@id="changeListCount"]/a[5]'))
+        ).click()
 
         for page in range(1, 5):
             #첫 페이지의 경우 버튼의 갯수가 하나 적음  
