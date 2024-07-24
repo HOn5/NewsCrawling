@@ -105,13 +105,13 @@ class NewsCrawling():
 
         for texts in html:
             body = ""
-            # 문장에서 제목, 날짜, 방송사 찾기
 
             for text in texts:
                 # 문장에 별 모양이 있는 경우
                 if '\u2605' in text:
                     continue
 
+                # 문장에서 제목, 날짜, 방송사 찾기
                 match = re.search(pattern, text)
 
                 if match:
