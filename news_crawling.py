@@ -40,9 +40,9 @@ class NewsCrawling():
         WebDriverWait(driver, 5).until(
             EC.presence_of_element_located((By.XPATH, '//*[@id="changeListCount"]/a[5]'))).click()
 
-        for page in range(1, 2):
+        for page in range(1, 5):
             #첫 페이지의 경우 버튼의 갯수가 하나 적음  
-            btn_range = range(1, 4) if page == 1 else range(2, 12)
+            btn_range = range(1, 11) if page == 1 else range(2, 12)
             for btn in btn_range:
                 try:
                     # 현재 페이지에서 링크 수집 
